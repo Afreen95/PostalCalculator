@@ -16,6 +16,7 @@ public class PostalCalculator {
 		System.out.println("Postal Calculator");
 		askLength();
 		askWidth();
+		askHeight(); 
 	}
 	
 	
