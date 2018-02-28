@@ -68,4 +68,24 @@ public class PostalCalculatorTest {
 	
 	}
 	
+	@Test
+	public void checkIsValidWeight() {
+		boolean isValid = PostalCalculator.checkWeightValidity(0.09);
+		Assert.assertTrue(isValid);
+		isValid = PostalCalculator.checkWeightValidity(0.1);
+		Assert.assertTrue(isValid);
+		isValid = PostalCalculator.checkWeightValidity(2);
+		Assert.assertTrue(isValid);
+		isValid = PostalCalculator.checkWeightValidity(0.5);
+		Assert.assertTrue(isValid);
+		isValid = PostalCalculator.checkWeightValidity(31);
+		Assert.assertFalse(isValid);
+		isValid = PostalCalculator.checkWeightValidity(30);
+		Assert.assertTrue(isValid);
+		isValid = PostalCalculator.checkWeightValidity(-2);
+		Assert.assertFalse(isValid);
+		isValid = PostalCalculator.checkWeightValidity(15);
+		Assert.assertTrue(isValid);
+	
+	}
 }
