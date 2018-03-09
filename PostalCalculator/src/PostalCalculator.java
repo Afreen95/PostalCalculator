@@ -1,211 +1,225 @@
+//Mo Kleit 260585368
+//Afreen Aliya 260561525
+
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class PostalCalculator {
-	// float length, width, height, weight;
-
-	public static double length, width, height, weight;
-	public static String toPostalCode, fromPostalCode;
-	public static char postalType;
-	// One postal code from each province and territory in Canada in Alphabetically
-	// order
-	public static String[] validPostalCodes = { "t5a0a1", "v0e1z0", "r2c0a1", "e3a0a1", "a0a1j0", "b3h4r2", "k9j0e7",
-			"c1a0a1", "h2x1s8", "s0k4s0", "x0e0y0", "x0a0h0", "y1a0a1" };
-
+	
+	//Input reader
 	public static Scanner sc = new Scanner(System.in);
+	
+	//User input
+	public static String input;
+	
+	//Postal code validity regex (lower case and upper case)
+	public static String regex = "^(?!.*[DFIOQU])[A-VXYa-vxy][0-9][A-Za-z][0-9][A-Za-z][0-9]$";
+	public static Pattern pattern = Pattern.compile(regex);
+	
+	//Variables declaration
+	public static double weight, length, height, width;
+	public static char postalType;
+	public static String postalCode;
 
-	
-	// TODO: Check if the Postal Code exists in the array provided
-	
 	public static void main(String[] args) {
-		System.out.println("Postal Calculator");
+		askWeight();
 		askLength();
 		askHeight();
 		askWidth();
-		checkGirth();
 		askPostalType();
-		askToPostalCode();
 		askFromPostalCode();
-		System.out.println(calculateRate());
-	}
-
-	// Keeps asking for the length till we get a valid length
-	public static void askLength() {
-		System.out.println("Enter Valid Length in cm: ");
-		length = sc.nextLong();
-		if (!checkLengthValidity(length)) {
-			askLength();
-		}
-
-	}
-
-	// Checking if length is valid
-	public static boolean checkLengthValidity(double length) {
-		if (length < 10 || length > 200) {
-			return false;
-		}
-		return true;
-	}
-
-	// Keeps asking for the width till we get a valid length
-	public static void askWidth() {
-		System.out.println("Enter Valid Width in cm:");
-		width = sc.nextLong();
-		if (!checkLengthValidity(width)) {
-			askWidth();
-		}
-
-	}
-
-	// Checking if width is valid
-	public static boolean checkWidthValidity(double width) {
-		if (width < 7 || width > 200) {
-			return false;
-		}
-		return true;
-	}
-
-	// Keeps asking for the height till we get a valid height
-	public static void askHeight() {
-		System.out.println("Enter Valid Height in cm: ");
-		height = sc.nextLong();
-		if (!checkLengthValidity(height)) {
-			askHeight();
-		}
-
-	}
-
-	// Checking if height is valid
-	public static boolean checkHeightValidity(double height) {
-		if (height < 0.1 || height > 200) {
-			return false;
-		}
-		return true;
-	}
-
-	// Keeps asking for the height till we get a valid height
-	public static void askWeight() {
-		System.out.println("Enter Valid Weight in kg: ");
-		weight = sc.nextLong();
-		if (!checkLengthValidity(weight)) {
-			askHeight();
-		}
-
-	}
-
-	// Checking if height is valid
-	public static boolean checkWeightValidity(double weight) {
-		if (weight < 0 || weight > 30) {
-			return false;
-		}
-		return true;
-	}
-
-	// Check if Girth is Valid
-	public static void checkGirth() {
-		if ((height + width) * 2 > 300) {
-			System.out.println("The girth should be less than 300 cm.");
-			askHeight();
-			askWidth();
-			checkGirth();
-		}
-	}
-
-	// Ask for postal Type: Regular/Xpress/Priority
-	public static void askPostalType() {
-		System.out.println("Enter Postal Type. R for Regular. X for Xpress. P for Priority.");
-		postalType = sc.next().charAt(0);
-		if (!(postalType == 'R' || postalType == 'r' || postalType == 'X' || postalType == 'x' || postalType == 'p'
-				|| postalType == 'P')) {
-			askPostalType();
-		}
-	}
-
-	// Ask for the postal code they are posting from
-	public static void askToPostalCode() {
-		sc.nextLine();
-		System.out.println("Enter the postal code you are posting from: ");
-		toPostalCode = sc.nextLine();
-		// Removing all spaces from the string provided to make computations easier.
-		toPostalCode = toPostalCode.replaceAll(" ", "");
-		// If length not 6, ask for postal code again
-		if (toPostalCode.length() != 6) {
-			askToPostalCode();
-		}
-		// Check if the format of the provided code is valid.
-		if (!checkValidPostalCodeFormat(toPostalCode)) {
-			askToPostalCode();
-		}
-		/*
-		if (validPostalCode(toPostalCode)) {
-			askFromPostalCode();
-		}
-		*/
-	}
-
-	// Ask for the postal code they are posting to
-	public static void askFromPostalCode() {
-		System.out.println("Enter the postal code you are posting to: ");
-		fromPostalCode = sc.nextLine();
-		// Removing all spaces from the string provided to make computations easier.
-		fromPostalCode = fromPostalCode.replaceAll(" ", "");
-		// If length not 6, ask for postal code again
-		if (fromPostalCode.length() != 6) {
-			System.out.println("Invalid postal Code length");
-			askFromPostalCode();
-		}
-		// Check if the format of the provided code is valid.
-		if (!checkValidPostalCodeFormat(fromPostalCode)) {
-			System.out.println("Invalid postal Code format");
-			askFromPostalCode();
-		}
-		
-		/*
-		if (validPostalCode(fromPostalCode)) {
-			System.out.println("Invalid postal Code. Not in provided array");
-			askFromPostalCode();
-		}
-		*/
+		askToPostalCode();
+		System.out.println("\nRate is : " + calculateRate(length, height, width, weight, postalType) + "$");
 	}
 	
-	/*
-	public static boolean validPostalCode(String postalCode) {
-		for(String s: validPostalCodes){
-	        if(s.equals(postalCode)) {
-	        	return true;
-	        }
-	    }
-    	return false;
-	}
-	*/
-
-	// Checking if the format of the provided is correct
-	// 1st, 3rd, 5th char have to be letters and others have to be digits
-	public static boolean checkValidPostalCodeFormat(String postalCode) {
-		if (!Character.isDigit(postalCode.charAt(1)) || !Character.isDigit(postalCode.charAt(3))
-				|| !Character.isDigit(postalCode.charAt(5))) {
-			System.out.println("Number Problem");
-			return false;
-		}
-		if (!Character.isLetter(postalCode.charAt(0)) || !Character.isLetter(postalCode.charAt(2))
-				|| !Character.isLetter(postalCode.charAt(4))) {
-			System.out.println("Letter Problem");
-			return false;
-		}
-		return true;
-	}
-	
-	public static double calculateRate() {
+	//Calculate rate
+	public static double calculateRate(double length, double height, double width, double weight, char type) {
 		double postalTypeRate;
-		if(postalType == 'r' || postalType == 'R') {
+		double rh = 0.1;	
+		if(type == 'r' || type == 'R') {
 			postalTypeRate = 2.0;
 		}
-		else if(postalType == 'x' || postalType == 'X') {
+		else if(type == 'x' || type == 'X') {
 			postalTypeRate = 5.0;
 		}
 		else {
 			postalTypeRate = 7.0;
 		}
-		return (0.1 * length + 0.1 * width + 0.1 * height + 0.3 * weight + 0.4 * postalTypeRate );
+		if (height < 1) {
+			rh = 0.0;
+		}
+		
+		return (0.1 * length + 0.1 * width + rh * height + 0.3 * weight + postalTypeRate );
 	}
-
+	
+	//Verify postal code is okay
+	public static boolean checkValidPostalCode(String postal) {
+		//Remove all white spaces and invisible character such as tab
+		postalCode = postal.replaceAll("\\s", "");
+		Matcher matcher = pattern.matcher(postalCode);
+		return matcher.matches();
+	}
+	
+	//Verify postal type input is valid
+	public static boolean checkPostalType(String input) {
+		//Check if input is one character long
+		if (input.length() > 1) {
+			return false;
+		}		
+		//Cast string to char
+		try {
+			postalType = input.charAt(0);
+		}
+		catch (Exception e) {
+			System.out.println("Invalid input!");
+			return false;
+		}
+		if (postalType == 'R' || postalType == 'r' || postalType == 'X' || postalType == 'x' ||
+				postalType == 'p' || postalType == 'P') {
+			return true;
+		}
+		return false;
+	}
+	
+	//Check width validity
+	public static boolean checkWidth(String input) {
+		//Cast input to double
+		try {
+			width = Double.parseDouble(input);		
+		}
+		catch (NumberFormatException e) {
+			System.out.println("Invalid number format!");
+			return false;
+		}
+		if (width < 10 || width > 200) {
+			System.out.println("Width should be between 10cm and 200cm!");
+			return false;
+		}
+		return true;
+	}
+	
+	//Check height validity
+	public static boolean checkHeight(String input) {
+		//Cast input to double
+		try {
+			height = Double.parseDouble(input);		
+		}
+		catch (NumberFormatException e) {
+			System.out.println("Invalid number format!");
+			return false;
+		}
+		if (height < 0.1 || height > 200) {
+			System.out.println("Height should be between 0.1cm and 200cm!");
+			return false;
+		}
+		return true;
+	}
+	
+	//Check length validity
+	public static boolean checkLength(String input) {
+		//Cast input to double
+		try {
+			length = Double.parseDouble(input);		
+		}
+		catch (NumberFormatException e) {
+			System.out.println("Invalid number format!");
+			return false;
+		}
+		if (length < 10 || length > 200) {
+			System.out.println("Length should be between 10cm and 200cm!");
+			return false;
+		}
+		return true;
+	}
+		
+	//Check weight validity
+	public static boolean checkWeight(String input) {
+		//Cast input to double
+		try {
+			weight = Double.parseDouble(input);		
+		}
+		catch (NumberFormatException e) {
+			System.out.println("Invalid number format!");
+			return false;
+		}
+		if (weight < 0 || weight > 30) {
+			System.out.println("Weight should be between 0 and 30kg!");
+			return false;
+		}
+		return true;
+	}
+	
+	//Get input from user
+	public static String getInput() {	
+		String input = sc.nextLine();
+		return input;
+	}
+	
+	// Ask for the postal code they are posting from
+	public static void askToPostalCode() {
+		System.out.println("Enter the postal code you are posting to: ");
+		input = getInput();
+		// Check if the format of the provided code is valid.
+		if (!checkValidPostalCode(input)) {
+			System.out.println("Invalid postal code!");
+			askToPostalCode();
+		}
+	}	
+	
+	// Ask for the postal code they are posting to
+	public static void askFromPostalCode() {
+		System.out.println("Enter the postal code you are posting from: ");
+		input = getInput();
+		// Check if the format of the provided code is valid.
+		if (!checkValidPostalCode(input)) {
+			askFromPostalCode();
+		}
+	}
+	
+	// Ask for postal Type: Regular/Xpress/Priority
+	public static void askPostalType() {
+		System.out.println("Enter Postal Type. R for Regular. X for Xpress. P for Priority.");
+		input = getInput();
+		if (!checkPostalType(input)) {
+			askPostalType();
+		}
+	}
+	
+	//Ask for width of package
+	public static void askWidth() {
+		System.out.println("Enter a width between 10cm and 200cm: ");
+		input = getInput();
+		if (!checkWidth(input)) {
+			askWidth();
+		}
+	}
+	
+	//Ask for height of package
+	public static void askHeight() {
+		System.out.println("Enter a height between 0.1cm and 200cm: ");
+		input = getInput();
+		if (!checkHeight(input)) {
+			askHeight();
+		}
+	}
+	
+	//Ask for length of package
+	public static void askLength() {
+		System.out.println("Enter a length between 10cm and 200cm: ");
+		input = getInput();
+		if (!checkLength(input)) {
+			askLength();
+		}
+	}
+	
+	//Ask for weight of package
+	public static void askWeight() {
+		System.out.println("Enter a weight (max 30kg) in kg: ");
+		input = getInput();
+		if (!checkWeight(input)) {
+			askWeight();
+		}
+	}
 }
